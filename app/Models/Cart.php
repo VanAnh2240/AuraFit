@@ -15,9 +15,9 @@ class Cart extends Model
         'CUSTOMER_ID',
         'QUANTITY'
     ];
-    public function books()
+    public function products()
     {
-        return $this->belongsToMany(Book::class, 'cart_has', 'CART_ID', 'BOOK_ID')
+        return $this->belongsToMany(product::class, 'cart_has', 'CART_ID', 'product_ID')
             ->as('item')
             ->withPivot('QUANTITY');
     }

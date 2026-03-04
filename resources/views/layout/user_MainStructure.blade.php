@@ -18,6 +18,13 @@
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/default-font.css') }}">
     <link rel="stylesheet" href="{{asset('frontend/css/user_MainStructure.css')}}">
+
+    <style>
+        *{
+            font-family: 'Be Vietnam Pro', sans-serif;
+        }
+    </style>
+
 </head>
 <body >
 @include ('layout.header')

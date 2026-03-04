@@ -1,8 +1,8 @@
-.book_title{
+.product_title{
     display: block;
   }
 
-  .book_title a{
+  .product_title a{
     color: var(--main-color);
     font-weight: bold;
     word-break: break-word;
@@ -15,11 +15,11 @@
     line-height: 1.4rem;
   }
 
-  .book_title:hover a{
+  .product_title:hover a{
     color: var(--main-color-light);
   }
 
-  .book_author{
+  .product_name_en{
     word-break: break-word;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -31,11 +31,11 @@
     margin-bottom: .3rem;
   }
 
-  .book_price{
+  .product_price{
     color: var(--main-color);
     font-weight: bold;
   }
-  .book_item{
+  .product_item{
     background: var(--light-bg);
     border-radius: .75rem;
     transition: transform .7s, box-shadow .7s;
@@ -51,12 +51,12 @@
     margin-bottom: 3rem;
 
 }
- .book-item:hover{
+ .product-item:hover{
     box-shadow:0px 0px 10px rgba(24, 24, 24, 0.3);
     transform: scale(1.07);
  }
 
- .book_img{
+ .product_img{
     height: 200px;
     margin-bottom: .75rem;
     transition: .3s;
@@ -66,23 +66,23 @@
     overflow: hidden;
   }
 
-  .book_img img{
+  .product_img img{
     display: block;
     max-width: 200px;
     max-height: 100%;
   }
 
-  .book_info{
+  .product_info{
     position: relative;
     display: flex;
     flex-direction: column;
   }
 
   .products {
-    .book_price{
+    .product_price{
        margin-bottom: .75rem;
     }
-    .book_title{
+    .product_title{
        line-height: 1.4rem;
        min-height: 3rem;
        max-height: 3rem;

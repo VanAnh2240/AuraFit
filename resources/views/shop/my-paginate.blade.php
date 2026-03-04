@@ -1,23 +1,5 @@
-<!-- </div>
-        <nav aria-label="Page navigation example">
-            <ul class="pagination pagination-custom">
-                <li class="page-item">
-                    <a class="page-link" href="#" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item">
-                    <a class="page-link" href="#" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </div> -->
-
+{{-- resources/views/shop/my-paginate.blade.php --}}
+<div class="container" id="product-list"></div>
 @if ($paginator->hasPages())
 <div>
     <nav class="d-flex justify-items-center justify-content-between">

@@ -5,11 +5,8 @@
     <div class="container p-4">
         <div class="row">
             <div class="outro col-lg-6 col-md-12 mb-4 mb-md-0">
-                <a href="#" class = "footer_brand h1">Verbify</a>
-                <p>
-                    Bring colorful, unique books where wondrous tales and adventures begin, inviting readers to explore enchanting worlds, meet unforgettable characters, and inspire dreams.
-
-                </p>
+                <a href="#" class = "footer_brand h1">AuraFit</a>
+                <p>Tiệm May Tháng Bảy – mang đến dịch vụ may đo chuyên nghiệp, trang phục vừa vặn, chất lượng cao, cùng trải nghiệm tư vấn và thử đồ ảo tiện lợi.</p>
                 <div class="icons footer_icons text-center fs-3">
                     <a href="{{url('https://www.facebook.com/khank.tran.3150')}}" class="btn-facebook mx-1">
                         <i class='bx bxl-facebook-circle'></i>
@@ -23,7 +20,7 @@
                 </div>
             </div>
             <div class="contact col-lg-3 col-md-6 mb-4 mb-md-0">
-                <h5>Our Contact</h5>
+                <h5>Liên hệ</h5>
 
                 <ul class="list-unstyled mb-0">
                     <li>
@@ -41,7 +38,7 @@
                     <li>
                         <a href="#">
                             <i class='bx bxl-gmail'></i>
-                            verbify@gmail.com
+                            aurafit@gmail.com
                         </a>
                     </li>
                 </ul>
@@ -51,22 +48,22 @@
 
                 <ul class="list-unstyled">
                     <li>
-                        <a href="{{route('home')}}">Home</a>
+                        <a href="{{route('home')}}">Trang chủ</a>
                     </li>
                     <li>
-                        <a href="#">About us</a>
+                        <a href="#">Về chúng tôi</a>
                     </li>
                     <li>
-                        <a href="{{route('shop.index')}}">Shop</a>
+                        <a href="{{route('shop.index')}}">Dịch vụ</a>
                     </li>
                     <li>
-                        <a href="#">Contact</a>
+                        <a href="#">Liên hệ</a>
                     </li>
                 </ul>
             </div>
         </div>
     </div>
     <div class=" copyright p-2">
-        © All Rights Reserved - 2024 - Group 9
+        © All Rights Reserved - 2025 - AuraFit
     </div>
 </footer>

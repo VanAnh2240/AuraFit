@@ -7,38 +7,113 @@ use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    public function home(){
-        $genres = DB::table('genres')->orderBy('genres_name','asc')->get();
+    public function home()
+    {
+        $categories = DB::table('category')
+            ->orderBy('category_name', 'asc')
+            ->get();
 
-        $books = [];
-        for ($i = 0; $i < count($genres); $i++) {
-            $genreName = DB::table('genres')->select('GENRES_NAME')->orderBy('genres_name','asc')->offset($i)->limit(1)->value('GENRES_NAME');
+        $categorySubs = DB::table('category_sub')
+            ->orderBy('category_sub_id', 'asc')
+            ->get()
+            ->groupBy('category_id');
 
-                $books[$i] = DB::table('book')
-                                ->leftJoin('book_image', 'book_image.book_id', '=', 'book.book_id')
-                                ->join('book_belong', 'book.book_id', '=', 'book_belong.book_id')
-                                ->where('book_belong.genres_name', $genreName)
-                                ->groupBy('book.BOOK_ID', 'book.NAME', 'book.AUTHOR', 'book.PRICE')
-                                ->select('book.BOOK_ID', 'book.NAME', 'book.AUTHOR', 'book.PRICE', DB::raw('MIN(book_image.IMAGE_LINK) AS IMAGE_LINK'))
-                                ->limit(8)
-                                ->get();
+        $allCategorySubs = DB::table('category_sub')
+            ->orderBy('category_sub_id', 'asc')
+            ->get();
+
+        // ── Lấy sản phẩm theo từng category_sub ─────────────
+        $products = [];
+        $allProductIds = [];
+
+        foreach ($allCategorySubs as $sub) {
+            $items = DB::table('product')
+                ->leftJoin('product_image', 'product_image.product_id', '=', 'product.product_id')
+                ->where('product.category_sub_id', $sub->category_sub_id)
+                ->where('product.is_selling', 1)
+                ->groupBy('product.product_id', 'product.name', 'product.price')
+                ->select(
+                    'product.product_id',
+                    'product.name',
+                    'product.price',
+                    DB::raw('MIN(product_image.image_link) AS image_link')
+                )
+                ->limit(8)
+                ->get();
+
+            $products[$sub->category_sub_id] = $items;
+
+            // Gom tất cả product_id để query màu 1 lần
+            foreach ($items as $item) {
+                $allProductIds[] = $item->product_id;
             }
+        }
 
-        $booksHotSale = DB::table('book')
-                            ->leftJoin('book_image', 'book_image.book_id', '=', 'book.book_id')
-                            ->join(DB::raw('(SELECT BOOK_ID FROM ORDER_ITEM GROUP BY BOOK_ID ORDER BY SUM(QUANTITY) DESC LIMIT 4) as top_books'), 'book.BOOK_ID', '=', 'top_books.BOOK_ID')
-                            ->groupBy('book.BOOK_ID', 'book.NAME', 'book.AUTHOR', 'book.PRICE')
-                            ->select('book.BOOK_ID', 'book.NAME', 'book.AUTHOR', 'book.PRICE', DB::raw('MIN(book_image.IMAGE_LINK) AS IMAGE_LINK'))
-                            ->get();
+        // ── Query màu 1 lần cho toàn bộ sản phẩm ────────────
+        $allProductIds = array_unique($allProductIds);
 
-        $booksLastest = DB::table('book')
-                            ->leftjoin('book_image', 'book_image.book_id', '=', 'book.book_id')
-                            ->groupBy('book.BOOK_ID', 'book.NAME', 'book.AUTHOR', 'book.PRICE')
-                            ->orderByDesc('book.BOOK_ID')
-                            ->select('book.BOOK_ID', 'book.NAME', 'book.AUTHOR', 'book.PRICE', DB::raw('MIN(book_image.IMAGE_LINK) AS IMAGE_LINK'))
-                            ->limit(4)
-                            ->get();
-        return view('home', compact('genres', 'booksLastest','booksHotSale','books'));
+        $colorsByProduct = DB::table('product_color')
+            ->join('color', 'color.color_code', '=', 'product_color.color_code')
+            ->whereIn('product_color.product_id', $allProductIds)
+            ->select(
+                'product_color.product_id',
+                'color.type_en',
+                'color.color_name_vi'
+            )
+            ->distinct()
+            ->get()
+            ->groupBy('product_id');  // key: product_id → collection of colors
+
+        // ── Gắn màu vào từng sản phẩm ────────────────────────
+        foreach ($products as $subId => $items) {
+            foreach ($items as $item) {
+                $item->colors = $colorsByProduct->get($item->product_id, collect());
+            }
+        }
+
+        // ── HOT SALE ──────────────────────────────────────────
+        $productsHotSale = DB::table('product')
+            ->leftJoin('product_image', 'product_image.product_id', '=', 'product.product_id')
+            ->joinSub(
+                DB::table('order_item')
+                    ->select('PRODUCT_ID', DB::raw('SUM(QUANTITY) as total_qty'))
+                    ->groupBy('PRODUCT_ID')
+                    ->orderByDesc('total_qty')
+                    ->limit(4),
+                'top_products',
+                fn ($join) => $join->on(
+                    DB::raw('CAST(product.product_id AS CHAR)'), '=',
+                    DB::raw('CAST(top_products.PRODUCT_ID AS CHAR)')
+                )
+            )
+            ->where('product.is_selling', 1)
+            ->groupBy('product.product_id', 'product.name', 'product.price')
+            ->select(
+                'product.product_id',
+                'product.name',
+                'product.price',
+                DB::raw('MIN(product_image.image_link) AS image_link')
+            )
+            ->get();
+
+        // ── LATEST ────────────────────────────────────────────
+        $productsLatest = DB::table('product')
+            ->leftJoin('product_image', 'product_image.product_id', '=', 'product.product_id')
+            ->where('product.is_selling', 1)
+            ->groupBy('product.product_id', 'product.name', 'product.price')
+            ->orderByDesc('product.product_id')
+            ->select(
+                'product.product_id',
+                'product.name',
+                'product.price',
+                DB::raw('MIN(product_image.image_link) AS image_link')
+            )
+            ->limit(4)
+            ->get();
+
+        return view('home', compact(
+            'categories', 'categorySubs', 'allCategorySubs',
+            'products', 'productsHotSale', 'productsLatest'
+        ));
     }
 }
-

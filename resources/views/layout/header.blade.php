@@ -1,134 +1,237 @@
-<!--==============HEADER==================-->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
-<link rel="stylesheet" href="{{ asset('css/default-font.css') }}">
-<link rel="stylesheet" href="{{asset('frontend/css/header.css')}}">
+<link rel="stylesheet" href="{{ asset('frontend/css/header.css') }}">
 
 <header class="header container-fluid">
     <ul class="nav navbar container">
+
+        {{-- Brand --}}
         <li>
-            <a href="{{route('home')}}" class="nav_brand hihi">
-                <h1 class = "display-5">Verbify</h1>
+            <a href="{{ route('home') }}" class="nav_brand hihi">
+                <h1>AuraFit</h1>
             </a>
         </li>
 
-        <li class = "col-5 d-md-inline d-none search_box">
-            <form action = "{{route('shop.search')}}" method="POST" class="py-1 px-3">
+        {{-- Search box (desktop) --}}
+        <li class="col-5 d-md-inline d-none search_box">
+            <form action="{{ route('shop.search') }}" method="POST">
                 @csrf
-                <input name="search" id = "searchbox" placeholder="Snow White and the Seven Dwarfs..." maxlength="100">
-                <button type="submit" class = "search-btn fs-5 pt-1">
-                    <i class = "bx bx-search-alt"></i>
+                <input name="search" id="searchbox" placeholder="Tìm kiếm sản phẩm..." maxlength="100">
+                <button type="submit" class="search-btn">
+                    <i class="bx bx-search-alt"></i>
                 </button>
             </form>
         </li>
 
-
+        {{-- Icons --}}
         <li class="header_icons col-md-auto text-end gx-2">
-            <div id="search-btn" class = "p-1 d-md-none d-inline">
-                <i class = "bx bx-search-alt fs-4"></i>
+            <div id="search-btn" class="p-1 d-md-none d-inline">
+                <i class="bx bx-search-alt"></i>
             </div>
-            <div id="cart-btn" class = "p-1">
-                <a href="{{route('cart.index')}}">
-                <i class = "bx bx-cart-alt fs-4"></i>
+            <div id="cart-btn" class="p-1">
+                <a href="{{ route('cart.index') }}">
+                    <i class="bx bx-cart-alt"></i>
                 </a>
             </div>
-            <div id="user-btn" class = "p-1">
-                <a href="{{route('profile')}}"><i class = "@if(Auth::check()) bx bxs-user-circle @else bx bx-user-circle @endif fs-4 "></i></a>
+            <div id="user-btn" class="p-1">
+                @if(Auth::check())
+                    <div class="user-avatar-mini">
+                        <img src="{{ !empty(Auth::user()->AVATAR)
+                            ? Storage::url(Auth::user()->AVATAR)
+                            : 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745' }}"
+                             alt="avatar">
+                    </div>
+                @else
+                    <a href="{{ route('login') }}"><i class="bx bx-user-circle"></i></a>
+                @endif
             </div>
         </li>
-        @if(Auth::check())
 
-        <li class="dropdown dropdown1 p-2 px-md-3 shadow" id="dropdown">
-            @foreach(DB::select('CALL get_cart_items_by_cart_id(?)', [Auth::user()->CART_ID]) as $book)
-            <div class="cart-item p-1">
-                <div class="cart_img col-3">
-                    <a href="#"><img src ="{{$book->IMAGE_LINK}}" class="img-fluid" alt="img"></a>
+        {{-- Search mobile --}}
+        <li class="search_box_hide" id="mobile-search">
+            <form action="{{ route('shop.search') }}" method="POST">
+                @csrf
+                <input name="search" placeholder="Tìm kiếm..." maxlength="100">
+                <button type="submit" class="search-btn">
+                    <i class="bx bx-search-alt"></i>
+                </button>
+            </form>
+        </li>
+
+        {{-- Cart dropdown --}}
+        @auth
+        <li class="dropdown1" id="dropdown">
+
+            @php
+                $cartItems = DB::select(
+                    'CALL get_cart_items_by_customer_id(?)', 
+                    [Auth::user()->CUSTOMER_ID]
+                );
+            @endphp
+
+            @forelse($cartItems as $product)
+                <div class="cart-item">
+                    <div class="cart_img">
+                        <img src="{{ $product->IMAGE_LINK }}" alt="{{ $product->NAME }}">
+                    </div>
+
+                    <span class="product_title">
+                        <a href="{{ route('product.detail', $product->PRODUCT_ID) }}">
+                            {{ $product->NAME }}
+                        </a>
+                    </span>
+
+                    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;">
+                        <span class="product_price">
+                            {{ number_format($product->PRICE * $product->QUANTITY, 0, ',', '.') }}₫
+                        </span>
+                        <span style="font-size:11px;color:var(--clr-text-muted);">
+                            x{{ $product->QUANTITY }}
+                        </span>
+                    </div>
                 </div>
-                <span class="book_title col-5"><a href="#">{{$book->NAME}}</a></span>
-                <span class="book_price col-3">{{$book->PRICE*$book->QUANTITY}}$</span>
-                <span class="book_price col-3">x{{$book->QUANTITY}}</span>
-            </div>
-            @endforeach
-            <div class="summary mt-2">
-                <a href="/cart">
-                <button class="btn-order">Go to cart</button>
+
+            @empty
+                <div class="cart-empty" style="padding:15px;text-align:center;color:var(--clr-text-muted);">
+                    Chưa có sản phẩm nào
+                </div>
+            @endforelse
+
+            {{-- LUÔN hiển thị nút --}}
+            <div class="summary">
+                <a href="{{ route('cart.index') }}">
+                    <button class="btn-order">Xem giỏ hàng</button>
                 </a>
             </div>
+
         </li>
-        @endif
+        @endauth
+
+        {{-- Profile dropdown --}}
         @if(Auth::check())
-        <li class="profile p-3 px-md-3 shadow" id="profile">
-            <div class = "d-flex flex-column justify-content-around">
-                <a href="{{route('profile')}}"><img src="https://static.vecteezy.com/system/resources/previews/014/194/216/original/avatar-icon-human-a-person-s-badge-social-media-profile-symbol-the-symbol-of-a-person-vector.jpg" alt="img"></a>
-                <a class = "h4 align-self-center name" href="{{route('profile')}}">{{Auth::user()->USERNAME}}</a>
-            </div>
-            <div class = "row g-4">
-                <a class= "col fs-6 btn-order" href="{{route('profile.order')}}">Order</a>
-                <a href="{{route('logout')}}" class="col btn-logout">Logout</a>
-            </div>
+        <li class="profile" id="profile">
+            <a href="{{ route('account') }}">
+                <img src="{{ !empty(Auth::user()->AVATAR)
+                    ? Storage::url(Auth::user()->AVATAR)
+                    : 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745' }}"
+                    alt="avatar">
+            </a>
+            <a class="name" href="{{ route('account') }}">{{ Auth::user()->USERNAME }}</a>
+            @if(!empty(Auth::user()->FIRST_NAME))
+                <span>{{ Auth::user()->LAST_NAME }} {{ Auth::user()->FIRST_NAME }}</span>
+            @endif
+            <a class="btn-order" href="{{ route('customer.orders') }}">Đơn đặt hàng</a>
+            <a href="{{ route('logout') }}" class="btn-logout">Đăng xuất</a>
         </li>
         @endif
+
     </ul>
 </header>
 
+{{-- NAV BAR --}}
+@php
+    $navCategories   = DB::table('category')->orderBy('category_name', 'asc')->get();
+    $navCategorySubs = DB::table('category_sub')->get()->groupBy('category_id');
+@endphp
+
+<nav class="nav-bar">
+    <div class="nav-bar-inner">
+
+        <div class="nav-item-wrap">
+            <a href="{{ route('home') }}" class="nav-item-link">Trang chủ</a>
+        </div>
+        <div class="nav-divider"></div>
+
+        <div class="nav-item-wrap">
+            <a href="/shop" class="nav-item-link">Tất cả</a>
+        </div>
+        <div class="nav-divider"></div>
+
+        @foreach ($navCategories as $cat)
+            <div class="nav-item-wrap">
+                <a href="/shop?category={{ $cat->category_id }}&sort=Newest" class="nav-item-link">
+                    {{ $cat->category_name }}
+                    @if(($navCategorySubs[$cat->category_id] ?? collect())->count())
+                        <i class="bx bx-chevron-down"></i>
+                    @endif
+                </a>
+                @if(($navCategorySubs[$cat->category_id] ?? collect())->count())
+                    <div class="mega-drop">
+                        <span class="mega-drop-header">{{ $cat->category_name }}</span>
+                        @foreach ($navCategorySubs[$cat->category_id] as $sub)
+                            <a href="/shop?category_sub={{ $sub->category_sub_id }}&sort=Newest"
+                               class="mega-link">{{ $sub->category_sub_name }}</a>
+                        @endforeach
+                        <a href="/shop?category={{ $cat->category_id }}&sort=Newest"
+                           class="mega-link mega-view-all">Xem tất cả →</a>
+                    </div>
+                @endif
+            </div>
+            @if(!$loop->last)<div class="nav-divider"></div>@endif
+        @endforeach
+
+        <div class="nav-divider"></div>
+        <div class="nav-item-wrap">
+            <a href="/chat" class="nav-item-link">
+                <i class="bx bx-bulb"></i> Gợi ý phối đồ
+            </a>
+        </div>
+        <div class="nav-divider"></div>
+        <div class="nav-item-wrap">
+            <a href="/tryon" class="nav-item-link">
+                <i class="bx bx-camera"></i> Thử đồ ảo
+            </a>
+        </div>
+
+    </div>
+</nav>
+
 <script>
-        /*=============== SHOW SEARCH ===============*/
-        let dropdown = document.getElementById('dropdown');
-        let search = document.querySelector('.header .nav .search_box_hide');
-        document.querySelector('#search-btn').onclick = () =>{
-        search.classList.toggle('active');
-        dropdown.classList.remove('show');
-        }
+document.addEventListener('DOMContentLoaded', function () {
+    const cartBtn      = document.getElementById('cart-btn');
+    const dropdown     = document.getElementById('dropdown');
+    const userBtn      = document.getElementById('user-btn');
+    const profile      = document.getElementById('profile');
+    const searchBtn    = document.getElementById('search-btn');
+    const mobileSearch = document.getElementById('mobile-search');
+    const header       = document.querySelector('.header');
 
-        /*=============== SHOW CART ===============*/
-        document.addEventListener('DOMContentLoaded', function () {
-            const cartIcon = document.getElementById('cart-btn');
-            const dropdown = document.getElementById('dropdown');
-            const summary = document.querySelector('.summary p');
+    function closeAll() {
+        dropdown?.classList.remove('show');
+        profile?.classList.remove('show');
+        mobileSearch?.classList.remove('active');
+    }
 
-            const toggleDropdown = (show) => {
-                dropdown.classList.toggle('show', show);
-                search.classList.remove('active');
-            };
+    searchBtn?.addEventListener('click', () => {
+        mobileSearch?.classList.toggle('active');
+        dropdown?.classList.remove('show');
+        profile?.classList.remove('show');
+    });
 
-            cartIcon.addEventListener('mouseenter', () => toggleDropdown(true));
-            cartIcon.addEventListener('mouseleave', () => toggleDropdown(false));
-            dropdown.addEventListener('mouseenter', () => toggleDropdown(true));
-            dropdown.addEventListener('mouseleave', () => toggleDropdown(false));
+    if (cartBtn && dropdown) {
+        let t;
+        cartBtn.addEventListener('mouseenter', () => { clearTimeout(t); closeAll(); dropdown.classList.add('show'); });
+        cartBtn.addEventListener('mouseleave', () => { t = setTimeout(() => dropdown.classList.remove('show'), 150); });
+        dropdown.addEventListener('mouseenter', () => clearTimeout(t));
+        dropdown.addEventListener('mouseleave', () => { t = setTimeout(() => dropdown.classList.remove('show'), 150); });
+    }
 
-            const updateTotalProducts = () => {
-                const totalProducts = document.querySelectorAll('.cart-item').length;
-                const productText = totalProducts >= 2 ? 'products' : 'product';
-                summary.innerHTML = `Total ${totalProducts} ${productText}`;
-            };
+    if (userBtn && profile) {
+        let t;
+        userBtn.addEventListener('mouseenter', () => { clearTimeout(t); closeAll(); profile.classList.add('show'); });
+        userBtn.addEventListener('mouseleave', () => { t = setTimeout(() => profile.classList.remove('show'), 150); });
+        profile.addEventListener('mouseenter', () => clearTimeout(t));
+        profile.addEventListener('mouseleave', () => { t = setTimeout(() => profile.classList.remove('show'), 150); });
+    }
 
-            document.querySelectorAll('.bxs-trash-alt').forEach(button => {
-                button.addEventListener('click', (event) => {
-                    const cartItem = event.target.closest('.cart-item');
-                    if (cartItem) {
-                        cartItem.classList.add('fade-out');
-                        setTimeout(() => {
-                            cartItem.remove();
-                            updateTotalProducts();
-                        }, 300);
-                    }
-                });
-            });
+    document.addEventListener('click', (e) => {
+        if (cartBtn && dropdown && !cartBtn.contains(e.target) && !dropdown.contains(e.target))
+            dropdown.classList.remove('show');
+        if (userBtn && profile && !userBtn.contains(e.target) && !profile.contains(e.target))
+            profile.classList.remove('show');
+    });
 
-            updateTotalProducts();
-        });
-        /*=================SHOW PROFILE==================*/
-        document.addEventListener('DOMContentLoaded', function () {
-            const userIcon = document.getElementById('user-btn');
-            const profile = document.getElementById('profile');
-            const toggleDropdown = (show) => {
-                profile.classList.toggle('show', show);
-                search.classList.remove('active');
-                dropdown.classList.remove('show');
-            };
-
-            userIcon.addEventListener('mouseenter', () => toggleDropdown(true));
-            userIcon.addEventListener('mouseleave', () => toggleDropdown(false));
-            profile.addEventListener('mouseenter', () => toggleDropdown(true));
-            profile.addEventListener('mouseleave', () => toggleDropdown(false));
-        });
+    window.addEventListener('scroll', () => {
+        header?.classList.toggle('scrolled', window.scrollY > 10);
+    });
+});
 </script>

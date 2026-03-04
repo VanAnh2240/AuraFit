@@ -15,14 +15,14 @@
 .intro_title{
    color: var(--main-color-dark);
    font-family: var(--second-font);
+   font-weight: 800;
 }
 .intro_subtitle{
    font-weight: normal;
 }
 
 .intro_img img{
-   width: 100%;
-   height: 100%;
+   width: 80%;
    transition: transform .7s;
 }
 
@@ -43,8 +43,8 @@
 
 /*===============  HIGHLIGHT ===============*/
 .highlight{
-   h4{
-      font-weight: bold;
+   h3{
+      font-weight: 700 ;
    }
    .card{
       border:none;
@@ -71,56 +71,57 @@
    }
 }
 
-/*===============  GENRES ===============*/
-.genreslist{
-   .container{
-      background-color: var(--light-bg);
-      border-radius: .5rem;
-   }
-   .row{
-      justify-content: center;
-      text-align: center;
-   }
-}
-.genres{
-   display: flex;
-   flex-direction: column;
-   align-items: center;
-   justify-content: center;
+/*===============  categories ===============*/
+/* Section danh mục */
+.Categorieslist {
+    padding: 2rem 0;
+    background-color: #f9f9f9;
 }
 
-.genres_img{
-   background-color: transparent;
-   border-radius: .5rem;
-   overflow: hidden;
-   width: 100%;
-   height: 150px;
+.Categorieslist .section_title h3 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #333;
 }
 
-.genres_img img{
-   height: 100%;
-   width: 100%;
-   object-fit: cover;
-   border-radius: .5rem;
+/* Card danh mục */
+.Categorieslist .Categories.card-item {
+    background-color: #fff;
+    border-radius: 10px;
+    text-align: center;
+    padding: 1rem 0.5rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
 }
 
-.genres_img{
-   transition: transform .7s, box-shadow .8s;
+.Categorieslist .Categories.card-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
 
-.genres_img:hover{
-   transform: scale(1.1);
-   box-shadow:0px 0px 10px rgba(24, 24, 24, 0.3);
+/* Tên danh mục */
+.Categorieslist .Categories_name {
+    font-weight: 500;
+    color: #555;
+    margin: 0;
 }
 
-.genres_name{
-   font-weight: bold;
-   color: var(--dark-color);
-   overflow-wrap: normal;
+/* Link full card */
+.Categorieslist .Categories.card-item a {
+    display: block;
+    text-decoration: none;
 }
 
-.genres_name:hover{
-   color: var(--fourth-color-dark-alt);
+/* Responsive: card nhỏ hơn trên mobile */
+@media (max-width: 768px) {
+    .Categorieslist .Categories.card-item {
+        padding: 0.8rem 0.5rem;
+    }
+
+    .Categorieslist .Categories_name {
+        font-size: 0.9rem;
+    }
 }
 
 /*=============== COLLECTION ===============*/
@@ -208,7 +209,7 @@
    background-color: var(--third-color);
    transition:.35s ease}
 
-.book_item{
+.product_item{
    background: var(--light-bg);
    border-radius: .75rem;
    transition: transform .7s, box-shadow .7s;
@@ -217,12 +218,12 @@
    overflow: hidden;
 }
 
-.book_item:hover{
+.product_item:hover{
    box-shadow:0px 0px 10px rgba(24, 24, 24, 0.3);
    transform: scale(1.07);
 }
 
-.book_img{
+.product_img{
    height: 200px;
    margin-bottom: .75rem;
    transition: .3s;
@@ -232,26 +233,21 @@
    overflow: hidden;
  }
 
- .book_img img{
+ .product_img img{
    display: block;
    max-width: 200px;
    max-height: 100%;
  }
 
- .book_info{
+ .product_info{
    position: relative;
    display: flex;
    flex-direction: column;
  }
 
  .products {
-   .book_price{
+   .product_en{
       margin-bottom: .75rem;
-   }
-   .book_title{
-      line-height: 1.4rem;
-      min-height: 3rem;
-      max-height: 3rem;
    }
  }
 
@@ -307,12 +303,12 @@
    color: var(--second-color);
 }
 
-.list .book_title a{
+.list .product_title a{
    color: var(--white-color);
    font-weight: bold;
 }
 
-.list .book_price{
+.list .product_en{
    color: var(--second-color);
    margin-bottom: .3rem;
 }
@@ -335,7 +331,7 @@
    transition: transform 0.7s;
 }
 
-.list-item .book_title a:hover{
+.list-item .product_title a:hover{
    color: var(--second-color);
 }
 
