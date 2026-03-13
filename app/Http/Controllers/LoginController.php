@@ -5,7 +5,6 @@ namespace App\Http\Controllers\login;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Customer;
-use App\Models\Wishlist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
