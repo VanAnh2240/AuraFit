@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Product extends Model
+class product extends Model
 {
     protected $table      = 'product';
     protected $primaryKey = 'product_id';
@@ -40,7 +40,7 @@ class Product extends Model
     public function colors()
     {
         return $this->belongsToMany(
-            Color::class,        // Model đích
+            color::class,        // Model đích
             'product_color',     // Bảng pivot
             'product_id',        // FK của model này trong pivot
             'color_code',        // FK của model đích trong pivot
